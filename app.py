@@ -39,14 +39,15 @@ def check_mask(mask):
         i = 0
         while i < 32:
             if end_of_ones and int(maskbits[i]) == 1:
-                print("Bad format of subnet mask!")
+                return False
                 quit()
             elif int(maskbits[i]) == 0:
                 end_of_ones = True
             i += 1
     else:
-        print("Bad format of subnet mask!")
-        quit()
+        return False
+    return True
+
 
 
 def convert_to_binary(address):
@@ -149,6 +150,7 @@ def send(
             binaddress=None,
             binSubnetMask=None,
             badAddress=None,
+            badMask=None,
             classOfAddress=None,
             binNetworkAddress=None,
             networkAddress=None,
@@ -167,6 +169,9 @@ def send(
         if not(check_address(address)):
             badAddress = "IP address is bad"
             return render_template('index.html', badAddress=badAddress)
+        if not(check_mask(subnetMask)):
+            badMask = "Subnet mask is bad"
+            return render_template('index.html', badMask=badMask)
         binaddress=convert_to_binary(address)
         binSubnetMask=convert_to_binary(subnetMask)
         classOfAddress = check_class(address)
@@ -202,4 +207,4 @@ def send(
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
