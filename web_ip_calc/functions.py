@@ -1,15 +1,11 @@
-from flask import Flask, render_template, request
 import re
 
-app = Flask(__name__)
-
-
-def check_address(ip):
+def check_address(ip: str) -> bool:
     is_correct = re.match(r"(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]?[0-9])$",ip)
     return is_correct
 
 
-def check_class(ip):
+def check_class(ip: str) -> str:
     octets = ip.split(".")
     if octets[0] == "127":
         return "This is loopback address."
@@ -25,11 +21,11 @@ def check_class(ip):
         return "This is class E"
 
 
-def calculate_cidr(mask):
+def calculate_cidr(mask: str) -> int:
     return mask.count('1')
 
 
-def check_mask(mask):
+def check_mask(mask: str):
     if check_address(mask):
         octets = mask.split(".")
         maskbits = ""
@@ -50,7 +46,7 @@ def check_mask(mask):
 
 
 
-def convert_to_binary(address):
+def convert_to_binary(address: str) -> str:
     octets = address.split(".")
     binary = ""
     for x in octets[:-1]:
@@ -59,7 +55,7 @@ def convert_to_binary(address):
     return binary
 
 
-def convert_to_decimal(binary):
+def convert_to_decimal(binary: str) -> str:
     octets = binary.split(".")
     decimal = ""
     for x in octets[:-1]:
@@ -68,7 +64,7 @@ def convert_to_decimal(binary):
     return decimal
 
 
-def calculate_subnet(ip, mask):
+def calculate_subnet(ip: str, mask: str) -> str:
     binary_ip = convert_to_binary(ip)
     binary_mask = convert_to_binary(mask)
     subnet_binary_address = ""
@@ -88,7 +84,7 @@ def calculate_subnet(ip, mask):
     return subnet_binary_address
 
 
-def calculate_broadcast(ip, mask):
+def calculate_broadcast(ip: str, mask: str) -> str:
     binary_ip = convert_to_binary(ip)
     binary_mask = convert_to_binary(mask)
     broadcast_address = ""
@@ -108,14 +104,14 @@ def calculate_broadcast(ip, mask):
     return broadcast_address
 
 
-def calculate_hosts(ip, mask):
+def calculate_hosts(mask: str) -> int:
     # how many hosts block
     cidr = calculate_cidr(convert_to_binary(mask))
     max_addresses = pow(2, 32-cidr) - 2
     return max_addresses
 
 
-def calculate_minhost(ip, mask):
+def calculate_minhost(ip: str, mask: str) -> int:
     # first host block
     min_host = convert_to_decimal(calculate_subnet(ip, mask))
     octets_min_host = min_host.split(".")
@@ -127,7 +123,7 @@ def calculate_minhost(ip, mask):
     return new_min_hosts
 
 
-def calculate_maxhost(ip, mask):
+def calculate_maxhost(ip: str, mask: str) -> int:
     # last host block
     max_host = convert_to_decimal(calculate_broadcast(ip, mask))
     octets_max_host = max_host.split(".")
@@ -137,74 +133,3 @@ def calculate_maxhost(ip, mask):
         new_max_hosts += str(x) + "."
     new_max_hosts = new_max_hosts + str(octets_max_host[-1])
     return new_max_hosts
-
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-
-@app.route('/send', methods=['POST'])
-def send(
-            address=None,
-            subnetMask=None,
-            binaddress=None,
-            binSubnetMask=None,
-            badAddress=None,
-            badMask=None,
-            classOfAddress=None,
-            binNetworkAddress=None,
-            networkAddress=None,
-            binBroadcastAddress=None,
-            broadcastAddress=None,
-            hosts=None,
-            binHosts=None,
-            binMinHost=None,
-            minhost=None,
-            binMaxHost=None,
-            maxhost=None
-        ):
-    if request.method == 'POST':
-        address = request.form['ipAddress']
-        subnetMask = request.form['subnetMask']
-        if not(check_address(address)):
-            badAddress = "IP address is bad"
-            return render_template('index.html', badAddress=badAddress)
-        if not(check_mask(subnetMask)):
-            badMask = "Subnet mask is bad"
-            return render_template('index.html', badMask=badMask)
-        binaddress=convert_to_binary(address)
-        binSubnetMask=convert_to_binary(subnetMask)
-        classOfAddress = check_class(address)
-        binNetworkAddress = calculate_subnet(address, subnetMask)
-        networkAddress = convert_to_decimal(binNetworkAddress)
-        binBroadcastAddress = calculate_broadcast(address, subnetMask)
-        broadcastAddress = convert_to_decimal(binBroadcastAddress)
-        hosts = calculate_hosts(address, subnetMask)
-        binHosts = str(format(int(hosts), "08b"))
-        minhost = calculate_minhost(address, subnetMask)
-        binMinHost = convert_to_binary(minhost)
-        maxhost = calculate_maxhost(address, subnetMask)
-        binMaxHost = convert_to_binary(maxhost)
-
-        return render_template(
-            'index.html',
-            binaddress=binaddress,
-            address=address,
-            subnetMask=subnetMask,
-            binSubnetMask=binSubnetMask,
-            classOfAddress=classOfAddress,
-            binNetworkAddress=binNetworkAddress,
-            networkAddress=networkAddress,
-            binBroadcastAddress=binBroadcastAddress,
-            broadcastAddress=broadcastAddress,
-            binHosts=binHosts,
-            hosts=hosts,
-            minhost=minhost,
-            binMinHost=binMinHost,
-            maxhost=maxhost,
-            binMaxHost=binMaxHost,
-        )
-
-
-if __name__ == '__main__':
-    app.run()
