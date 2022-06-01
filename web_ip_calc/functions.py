@@ -1,24 +1,29 @@
 import re
 
+
 def check_address(ip: str) -> bool:
-    is_correct = re.match(r"(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]?[0-9])$",ip)
+    is_correct = re.match(r"(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|\
+        [0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]\
+        ?[0-9])$", ip)
     return is_correct
 
 
 def check_class(ip: str) -> str:
     octets = ip.split(".")
     if octets[0] == "127":
-        return "This is loopback address."
+        return "This is a loopback address."
     elif 1 <= int(octets[0]) <= 126:
         return "This is class A."
     elif 128 <= int(octets[0]) <= 191:
         return "This is class B."
     elif 192 <= int(octets[0]) <= 223:
-        return "This is class C"
+        return "This is class C."
     elif 224 <= int(octets[0]) <= 239:
-        return "This is class D"
-    elif 240 <= int(octets[0]) <= 254:
-        return "This is class E"
+        return "This is class D."
+    elif 240 <= int(octets[0]) <= 247:
+        return "This is class E."
+    elif 248 <= int(octets[0]) <= 254:
+        return "This is class F."
 
 
 def calculate_cidr(mask: str) -> int:
@@ -45,7 +50,6 @@ def check_mask(mask: str):
     return True
 
 
-
 def convert_to_binary(address: str) -> str:
     octets = address.split(".")
     binary = ""
@@ -70,6 +74,8 @@ def calculate_subnet(ip: str, mask: str) -> str:
     subnet_binary_address = ""
     i = 0
     cidr = calculate_cidr(binary_mask)
+    if cidr == 32:
+        return "It's not a subnet, it's a host."
     while i < 35:
         if i <= cidr-1:
             if binary_ip[i] == ".":

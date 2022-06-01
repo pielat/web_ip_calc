@@ -7,8 +7,10 @@
     "python.testing.unittestArgs": [
         "-v",
         "-s",
-        ".",
+        "./web_ip_calc",
         "-p",
-        "*_test.py"
-    ]
+        "test_*.py"
+    ],
+    "python.linting.flake8Enabled": true,
+    "python.linting.enabled": true
 }
