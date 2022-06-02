@@ -1,7 +1,10 @@
-from flask import render_template, request, Blueprint
-from .functions import check_address, check_class, check_mask,\
-    convert_to_binary, convert_to_decimal, calculate_subnet,\
-    calculate_broadcast, calculate_hosts, calculate_minhost, calculate_maxhost
+from flask import Blueprint, render_template, request
+
+from .functions import (calculate_broadcast, calculate_hosts,
+                        calculate_maxhost, calculate_minhost, calculate_subnet,
+                        check_address, check_class, check_mask,
+                        convert_to_binary, convert_to_decimal)
+
 view = Blueprint('calc', __name__)
 
 

@@ -1,4 +1,4 @@
-from web_ip_calc.functions import check_class, calculate_cidr
+from web_ip_calc.functions import calculate_cidr, check_class
 
 
 def test_check_class():
