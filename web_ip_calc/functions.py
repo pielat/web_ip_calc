@@ -1,7 +1,7 @@
 import re
 
 
-def check_address(ip: str) -> bool:
+def check_address(ip: str) -> str:
     is_correct = re.match(r"(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|\
         [0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]\
         ?[0-9])$", ip)
@@ -24,6 +24,8 @@ def check_class(ip: str) -> str:
         return "This is class E."
     elif 248 <= int(octets[0]) <= 254:
         return "This is class F."
+    else:
+        return "Something is wrong with this address"
 
 
 def calculate_cidr(mask: str) -> int:
@@ -129,7 +131,7 @@ def calculate_minhost(ip: str, mask: str) -> int:
     return new_min_hosts
 
 
-def calculate_maxhost(ip: str, mask: str) -> int:
+def calculate_maxhost(ip: str, mask: str) -> str:
     # last host block
     max_host = convert_to_decimal(calculate_broadcast(ip, mask))
     octets_max_host = max_host.split(".")
