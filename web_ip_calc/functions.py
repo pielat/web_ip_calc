@@ -1,11 +1,14 @@
 import re
 
 
-def check_address(ip: str) -> str:
-    is_correct = re.match(r"(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|\
-        [0-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]\
-        ?[0-9])$", ip)
-    return is_correct
+def check_address(ip: str) -> bool:
+    reg = (r'(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]?[0-9])\.){3}'
+           '(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[0-9]?[0-9])$')
+    is_correct = re.match(reg, ip)
+    if is_correct is None:
+        return False
+    else:
+        return True
 
 
 def check_class(ip: str) -> str:
@@ -32,7 +35,9 @@ def calculate_cidr(mask: str) -> int:
     return mask.count('1')
 
 
-def check_mask(mask: str):
+def check_mask(mask: str) -> bool:
+    # sure, I could use regex here, but I wanted
+    # to check if I can solve this myself
     if check_address(mask):
         octets = mask.split(".")
         maskbits = ""
@@ -119,11 +124,11 @@ def calculate_hosts(mask: str) -> int:
     return max_addresses
 
 
-def calculate_minhost(ip: str, mask: str) -> int:
+def calculate_minhost(ip: str, mask: str) -> str:
     # first host block
     min_host = convert_to_decimal(calculate_subnet(ip, mask))
     octets_min_host = min_host.split(".")
-    octets_min_host[-1] = int(octets_min_host[-1]) + 1
+    octets_min_host[-1] = str(int(octets_min_host[-1]) + 1)
     new_min_hosts = ""
     for x in octets_min_host[:-1]:
         new_min_hosts += str(x) + "."
@@ -135,7 +140,7 @@ def calculate_maxhost(ip: str, mask: str) -> str:
     # last host block
     max_host = convert_to_decimal(calculate_broadcast(ip, mask))
     octets_max_host = max_host.split(".")
-    octets_max_host[-1] = int(octets_max_host[-1]) - 1
+    octets_max_host[-1] = str(int(octets_max_host[-1]) - 1)
     new_max_hosts = ""
     for x in octets_max_host[:-1]:
         new_max_hosts += str(x) + "."
