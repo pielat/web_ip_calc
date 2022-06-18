@@ -44,6 +44,6 @@ jobs:
     - name: Build and push the Docker image
       run: |
         docker build . --file Dockerfile --tag web_ip_calc:latest
-        docker login rejestr.pielatowski.pl --username ${{ secrets.REGISTRY_USERNAME }} --password-stdin ${{ secrets.REGISTRY_PASSWORD }}
+        docker login rejestr.pielatowski.pl --username ${{ secrets.REGISTRY_USERNAME }} --password ${{ secrets.REGISTRY_PASSWORD }}
         docker push rejestr.pielatowski.pl/web_ip_calc:latest
 
