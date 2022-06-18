@@ -45,5 +45,5 @@ jobs:
       run: |
         docker build . --file Dockerfile --tag rejestr.pielatowski.pl/web_ip_calc:latest
         docker login rejestr.pielatowski.pl --username ${{ secrets.REGISTRY_USERNAME }} --password ${{ secrets.REGISTRY_PASSWORD }}
-        docker push
+        docker push rejestr.pielatowski.pl/web_ip_calc:latest
 
