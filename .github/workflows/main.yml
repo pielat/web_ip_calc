@@ -42,4 +42,7 @@ jobs:
         if [ -d tests ] || [ -d test ]; then python -m pytest; fi
 
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      run: |
+        docker build . --file Dockerfile --tag web_ip_calc:$(date +%s)
+        docker login rejestr.pielatowski.pl --username ${{ secrets.REGISTRY_USERNAME }} --password ${{ secrets.REGISTRY_PASSWORD }}
+
