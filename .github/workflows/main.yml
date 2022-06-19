@@ -54,5 +54,5 @@ jobs:
         kubeconfig: ${{ secrets.KUBE_CONFIG }}
     - name: Kubernetes apply deployment
       run: |
-        kubectl apply k8s.yaml
+        kubectl apply -f k8s.yaml
 
