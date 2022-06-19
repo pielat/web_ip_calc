@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: static-site
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       app: static-site
@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: static-site
-        image: rejestr.pielatowski.pl/web_ip_calc:latest
+        image: rejestr.pielatowski.pl/web_ip_calc:1.1
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
